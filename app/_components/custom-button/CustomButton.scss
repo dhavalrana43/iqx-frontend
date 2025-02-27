@@ -1,0 +1,36 @@
+.btn {
+  @apply p-px;
+  span {
+    @apply py-3 px-5 flex w-full  rounded-full bg-transparent;
+  }
+
+  &-gradient {
+    @apply bg-gradient-to-tr from-light-blue via-light-purple  to-pink text-white;
+  }
+  &-dark {
+    @apply bg-steel text-white;
+  }
+  &-light {
+    @apply bg-chrome text-steel;
+  }
+  &-white {
+    @apply bg-white text-steel;
+  }
+
+  &-outline {
+    &.btn-gradient {
+      span {
+        @apply bg-white text-steel;
+      }
+    }
+    &.btn-dark {
+      @apply bg-white text-steel;
+    }
+    &.btn-light {
+      @apply bg-steel text-chrome;
+    }
+    &.btn-white {
+      @apply bg-steel text-white;
+    }
+  }
+}
