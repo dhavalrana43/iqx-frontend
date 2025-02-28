@@ -1,10 +1,12 @@
-import axios from "axios";
+// app/_service/auth.ts
 
 import { siteConfig } from "@/_config/site";
 
 const baseUrl = siteConfig.apiUrl;
 
-// Function to generate JWT token
+const graphqlEndpoint = `${baseUrl}/graphql`;
+
+// For login mutation, we'll use standard REST since Strapi's GraphQL doesn't expose auth endpoints
 export async function getAuthToken() {
   const url = new URL("/api/auth/local", baseUrl);
   const credentials = {
@@ -12,7 +14,15 @@ export async function getAuthToken() {
     password: "Maven@123", // Your password
   };
 
-  const response = await axios.post(url.href, credentials);
+  const response = await fetch(url.href, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  });
 
-  return response.data.jwt; // Return the JWT token
+  const data = await response.json();
+
+  return data.jwt; // Return the JWT token
 }

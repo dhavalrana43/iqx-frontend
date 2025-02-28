@@ -6,7 +6,6 @@ import LeadershipCard from "./LeadershipCard";
 
 const Leadership = (props: any) => {
   const { variant, details, leaderships } = props;
-
   const variantClassName =
     variant && typeof variant.Variant === "string"
       ? `custom-bg-${variant?.Variant.toLowerCase()}`

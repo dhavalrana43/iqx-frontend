@@ -1,37 +1,57 @@
-import qs from "qs";
+// app/_service/careers.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData } from "@/_data/loaders";
+import { graphqlClient } from "@/_lib/graphql-client";
+import {
+  IMAGE_FRAGMENT,
+  FOOTER_CTA_FRAGMENT,
+  COMMON_BLOCKS_FRAGMENT,
+} from "@/_graphql/fragments";
 
-import { commonBlocks } from "./common-service-components/common-blocks";
-import { footerBlock } from "./common-service-components/footer";
+const CAREERS_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+  ${FOOTER_CTA_FRAGMENT}
+  ${COMMON_BLOCKS_FRAGMENT}
 
-const baseUrl = siteConfig.apiUrl;
+  query GetCareersPage {
+    careersPage {
+      data {
+        attributes {
+          documentId
+          title
+          description
+          slug
+          theme {
+            data {
+              attributes {
+                mainColor
+                secondaryColor
+              }
+            }
+          }
+          heroBanner {
+            title
+            image {
+              ...ImageFragment
+            }
+          }
+          blocks {
+            ...CommonBlocksFragment
+          }
+          footerCta {
+            ...FooterCtaFragment
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const fetchCareersData = async () => {
   try {
-    const url = new URL("/api/careers-page", baseUrl);
+    const response = await graphqlClient.request(CAREERS_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["documentId", "title", "description", "slug"],
-      populate: {
-        theme: {
-          populate: "*",
-        },
-        heroBanner: {
-          fields: ["title"],
-          populate: {
-            image: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-          },
-        },
-        blocks: commonBlocks,
-        footerCta: footerBlock,
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { careersPage: any }).careersPage;
   } catch (error) {
     throw error;
   }

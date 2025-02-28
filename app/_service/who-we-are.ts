@@ -1,38 +1,57 @@
-import qs from "qs";
+// app/_service/who-we-are.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData } from "@/_data/loaders";
+import { graphqlClient } from "@/_lib/graphql-client";
+import {
+  IMAGE_FRAGMENT,
+  FOOTER_CTA_FRAGMENT,
+  COMMON_BLOCKS_FRAGMENT,
+} from "@/_graphql/fragments";
 
-import { footerBlock } from "./common-service-components/footer";
-import { commonBlocks } from "./common-service-components/common-blocks";
+const WHO_WE_ARE_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+  ${FOOTER_CTA_FRAGMENT}
+  ${COMMON_BLOCKS_FRAGMENT}
 
-const baseUrl = siteConfig.apiUrl;
+  query GetWhoWeArePage {
+    whoWeArePage {
+      data {
+        attributes {
+          documentId
+          title
+          description
+          slug
+          theme {
+            data {
+              attributes {
+                mainColor
+                secondaryColor
+              }
+            }
+          }
+          heroBanner {
+            title
+            image {
+              ...ImageFragment
+            }
+          }
+          blocks {
+            ...CommonBlocksFragment
+          }
+          footerCta {
+            ...FooterCtaFragment
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const getWhoWeareData = async () => {
   try {
-    const url = new URL("/api/who-we-are-page", baseUrl);
+    const response = await graphqlClient.request(WHO_WE_ARE_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["documentId", "title", "description", "slug"],
-      populate: {
-        theme: {
-          populate: "*",
-        },
-        heroBanner: {
-          fields: ["title"],
-          populate: {
-            image: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-          },
-        },
-        blocks: commonBlocks,
-
-        footerCta: footerBlock,
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { whoWeArePage: any }).whoWeArePage;
   } catch (error) {
     throw error;
   }

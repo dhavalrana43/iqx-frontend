@@ -1,33 +1,49 @@
-import qs from "qs";
+// app/_service/footer.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData } from "@/_data/loaders";
+import { graphqlClient } from "@/_lib/graphql-client";
+import { IMAGE_FRAGMENT } from "@/_graphql/fragments";
 
-const baseUrl = siteConfig.apiUrl;
+const FOOTER_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+
+  query GetFooter {
+    footer {
+      data {
+        attributes {
+          documentId
+          logoImage {
+            ...ImageFragment
+          }
+          logo {
+            title
+            url
+          }
+          socialLink {
+            title
+            url
+            icon {
+              ...ImageFragment
+            }
+          }
+          navigations {
+            title
+            links {
+              title
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const getFooterData = async () => {
   try {
-    const url = new URL("/api/footer", baseUrl);
+    const response = await graphqlClient.request(FOOTER_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["documentId"],
-      populate: {
-        logoImage: {
-          fields: ["url", "alternativeText", "height", "width"],
-        },
-        logo: {
-          populate: "*",
-        },
-        socialLink: {
-          populate: "*",
-        },
-        navigations: {
-          populate: "*",
-        },
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { footer: any }).footer;
   } catch (error) {
     throw error;
   }

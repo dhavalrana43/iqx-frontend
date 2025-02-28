@@ -1,69 +1,100 @@
-import qs from "qs";
+// app/_service/capability.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData } from "@/_data/loaders";
+import { graphqlClient } from "@/_lib/graphql-client";
+import {
+  IMAGE_FRAGMENT,
+  FOOTER_CTA_FRAGMENT,
+  COMMON_BLOCKS_FRAGMENT,
+} from "@/_graphql/fragments";
 
-import { commonBlocks } from "./common-service-components/common-blocks";
-import { footerBlock } from "./common-service-components/footer";
+const CAPABILITY_BY_SLUG_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+  ${FOOTER_CTA_FRAGMENT}
+  ${COMMON_BLOCKS_FRAGMENT}
 
-const baseUrl = siteConfig.apiUrl;
+  query GetCapabilityBySlug($slug: String!) {
+    capabilities(filters: { slug: { eq: $slug } }) {
+      data {
+        attributes {
+          documentId
+          title
+          description
+          slug
+          theme {
+            data {
+              attributes {
+                mainColor
+                secondaryColor
+              }
+            }
+          }
+          heroBanner {
+            title
+            image {
+              ...ImageFragment
+            }
+          }
+          blocks {
+            ...CommonBlocksFragment
+          }
+          footerCta {
+            ...FooterCtaFragment
+          }
+        }
+      }
+    }
+  }
+`;
+
+const ALL_CAPABILITIES_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+
+  query GetAllCapabilities {
+    capabilities {
+      data {
+        attributes {
+          documentId
+          title
+          description
+          slug
+          theme {
+            data {
+              attributes {
+                mainColor
+                secondaryColor
+              }
+            }
+          }
+          heroBanner {
+            title
+            image {
+              ...ImageFragment
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const getCapabilityBySlug = async (slug: string) => {
   try {
-    const url = new URL("/api/capabilities", baseUrl);
-
-    url.search = qs.stringify({
-      filters: {
-        slug: {
-          $eq: slug,
-        },
-      },
-      fields: ["documentId", "title", "description", "slug"],
-      populate: {
-        theme: {
-          populate: "*",
-        },
-        heroBanner: {
-          fields: ["title"],
-          populate: {
-            image: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-          },
-        },
-        blocks: commonBlocks,
-        footerCta: footerBlock,
-      },
+    const response = await graphqlClient.request(CAPABILITY_BY_SLUG_QUERY, {
+      slug,
     });
 
-    return await fetchData(url.href);
+    return (response as { capabilities: any }).capabilities;
   } catch (error) {
     throw error;
   }
 };
 
-// Function to get all capabilities (minimal data for listing)
 export const getAllCapabilitiesSlugs = async () => {
   try {
-    const url = new URL("/api/capabilities", baseUrl);
+    const response = await graphqlClient.request(ALL_CAPABILITIES_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["documentId", "title", "description", "slug"],
-      populate: {
-        theme: {
-          populate: "*",
-        },
-        heroBanner: {
-          populate: {
-            image: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-          },
-        },
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { capabilities: any }).capabilities;
   } catch (error) {
     throw error;
   }

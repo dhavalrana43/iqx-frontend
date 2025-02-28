@@ -1,41 +1,52 @@
-import qs from "qs";
+// app/_service/header.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData } from "@/_data/loaders";
+import { graphqlClient } from "@/_lib/graphql-client";
+import { IMAGE_FRAGMENT } from "@/_graphql/fragments";
 
-const baseUrl = siteConfig.apiUrl;
+const HEADER_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+
+  query GetHeader {
+    header {
+      data {
+        attributes {
+          documentId
+          logoImage {
+            ...ImageFragment
+          }
+          logo {
+            title
+            url
+          }
+          favicon {
+            ...ImageFragment
+          }
+          ctaButton {
+            title
+            url
+            variant
+            target
+          }
+          navigations {
+            title
+            url
+            subMenu {
+              title
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const getHeaderData = async () => {
   try {
-    const url = new URL("/api/header", baseUrl);
+    const response = await graphqlClient.request(HEADER_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["documentId"],
-      populate: {
-        logoImage: {
-          fields: ["url", "alternativeText", "height", "width"],
-        },
-        logo: {
-          populate: "*",
-        },
-        favicon: {
-          fields: ["url", "alternativeText", "height", "width"],
-        },
-        ctaButton: {
-          populate: "*",
-        },
-        navigations: {
-          fields: ["title", "url"],
-          populate: {
-            subMenu: {
-              populate: true,
-            },
-          },
-        },
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { header: any }).header;
   } catch (error) {
     throw error;
   }

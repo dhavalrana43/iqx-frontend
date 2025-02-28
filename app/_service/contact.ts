@@ -1,109 +1,145 @@
-import qs from "qs";
+// app/_service/contact.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData, postData } from "@/_data/loaders";
+import { graphqlClient, getAuthenticatedClient } from "@/_lib/graphql-client";
+import {
+  IMAGE_FRAGMENT,
+  FOOTER_CTA_FRAGMENT,
+  BUTTON_FRAGMENT,
+  DETAILS_FRAGMENT,
+  VARIANT_FRAGMENT,
+} from "@/_graphql/fragments";
 
-import { getAuthToken } from "./auth";
-import { footerBlock } from "./common-service-components/footer";
+const CONTACT_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+  ${FOOTER_CTA_FRAGMENT}
+  ${BUTTON_FRAGMENT}
+  ${DETAILS_FRAGMENT}
+  ${VARIANT_FRAGMENT}
 
-const baseUrl = siteConfig.apiUrl;
+  query GetContactPage {
+    contactPage {
+      data {
+        attributes {
+          documentId
+          title
+          description
+          slug
+          theme {
+            data {
+              attributes {
+                mainColor
+                secondaryColor
+              }
+            }
+          }
+          heroBanner {
+            title
+            image {
+              ...ImageFragment
+            }
+          }
+          contactForm {
+            details {
+              ...DetailsFragment
+            }
+            form {
+              formFields {
+                __typename
+                ... on ComponentFormsInput {
+                  label
+                  name
+                  placeholder
+                  required
+                  type
+                }
+                ... on ComponentFormsTextarea {
+                  label
+                  name
+                  placeholder
+                  required
+                }
+                ... on ComponentFormsDropdown {
+                  label
+                  name
+                  placeholder
+                  required
+                  options {
+                    label
+                    value
+                  }
+                }
+              }
+            }
+            variant {
+              ...VariantFragment
+            }
+            buttonVarient {
+              ...VariantFragment
+            }
+            image {
+              ...ImageFragment
+            }
+          }
+          contactInfo {
+            contact {
+              contactLink {
+                title
+                url
+                icon {
+                  ...ImageFragment
+                }
+              }
+            }
+          }
+          footerCta {
+            ...FooterCtaFragment
+          }
+        }
+      }
+    }
+  }
+`;
+
+const CREATE_INQUIRY_MUTATION = gql`
+  mutation CreateInquiry($data: InquiryInput!) {
+    createInquiry(data: $data) {
+      data {
+        id
+        attributes {
+          key
+          title
+        }
+      }
+    }
+  }
+`;
 
 export const getContactData = async () => {
   try {
-    const url = new URL("/api/contact-page", baseUrl);
+    const response = await graphqlClient.request(CONTACT_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["documentId", "title", "description", "slug"],
-      populate: {
-        theme: {
-          populate: "*",
-        },
-        heroBanner: {
-          fields: ["title"],
-          populate: {
-            image: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-          },
-        },
-        contactForm: {
-          populate: {
-            fields: ["documentId"],
-            details: {
-              populate: "*",
-            },
-            form: {
-              populate: {
-                formFields: {
-                  on: {
-                    "forms.dropdown": {
-                      populate: ["options"],
-                    },
-                    "forms.input": {
-                      populate: "*",
-                    },
-                    "forms.textarea": {
-                      populate: "*",
-                    },
-                  },
-                },
-              },
-            },
-            variant: {
-              populate: "*",
-            },
-            buttonVarient: {
-              populate: "*",
-            },
-
-            image: {
-              populate: {
-                fields: ["url", "alternativeText", "height", "width"],
-              },
-            },
-          },
-        },
-        contactInfo: {
-          fields: ["*"],
-          populate: {
-            contact: {
-              fields: ["*"],
-              populate: {
-                contactLink: {
-                  fields: ["*"],
-                  populate: ["icon"],
-                },
-              },
-            },
-          },
-        },
-
-        footerCta: footerBlock,
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { contactPage: any }).contactPage;
   } catch (error) {
     throw error;
   }
 };
 
 export const saveContactFormData = async (data: any) => {
-  const authToken = await getAuthToken();
-
-  if (!authToken) throw new Error("No auth token found");
-
   try {
-    const url = new URL("/api/inquiries", baseUrl);
-
-    const response = await postData(url.href, {
+    const client = await getAuthenticatedClient();
+    const formattedData = {
       key: data.key,
       origin: data.origin,
       title: data.title,
-      data,
+      data: JSON.stringify(data),
+    };
+
+    const response = await client.request(CREATE_INQUIRY_MUTATION, {
+      data: formattedData,
     });
 
-    return response;
+    return (response as { createInquiry: any }).createInquiry;
   } catch (error) {
     throw error;
   }

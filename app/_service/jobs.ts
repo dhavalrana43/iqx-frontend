@@ -1,51 +1,54 @@
-// app\_service\jobs.ts
-import qs from "qs";
+// app/_service/jobs.ts
+import { gql } from "graphql-request";
 
-import { siteConfig } from "@/_config/site";
-import { fetchData } from "@/_data/loaders";
+import { graphqlClient } from "@/_lib/graphql-client";
+import { IMAGE_FRAGMENT, FOOTER_CTA_FRAGMENT } from "@/_graphql/fragments";
 
-const baseUrl = siteConfig.apiUrl;
+const JOB_SEARCH_QUERY = gql`
+  ${IMAGE_FRAGMENT}
+  ${FOOTER_CTA_FRAGMENT}
+
+  query GetJobSearchPage {
+    jobSearchPage {
+      data {
+        attributes {
+          title
+          description
+          slug
+          theme {
+            data {
+              attributes {
+                mainColor
+                secondaryColor
+              }
+            }
+          }
+          heroBanner {
+            title
+            image {
+              ...ImageFragment
+            }
+          }
+          footerCta {
+            ...FooterCtaFragment
+          }
+        }
+      }
+    }
+  }
+`;
 
 export const getJobSearchData = async () => {
   try {
-    const url = new URL("/api/job-search-page", baseUrl);
+    const response = await graphqlClient.request(JOB_SEARCH_QUERY);
 
-    url.search = qs.stringify({
-      fields: ["title", "description", "slug"],
-      populate: {
-        theme: {
-          populate: "*",
-        },
-        heroBanner: {
-          populate: {
-            fields: ["title"],
-            image: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-          },
-        },
-        footerCta: {
-          populate: {
-            ctaImage: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-            details: {
-              populate: true,
-            },
-            ctaButton: {
-              populate: "*",
-            },
-          },
-        },
-      },
-    });
-
-    return await fetchData(url.href);
+    return (response as { jobSearchPage: any }).jobSearchPage;
   } catch (error) {
     throw error;
   }
 };
 
+// These functions don't interact with Strapi's GraphQL, so they remain unchanged
 export const fetchAllJobs = async () => {
   try {
     const getAllJobsData = await fetch(
