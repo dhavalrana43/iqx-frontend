@@ -8,6 +8,7 @@ import {
   DETAILS_FRAGMENT,
   VARIANT_FRAGMENT,
 } from "@/_graphql/fragments";
+import { OurThoughtsData, OurThoughtsResponse } from "@/_types/our-thoughts";
 
 const OUR_THOUGHTS_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -53,11 +54,12 @@ const OUR_THOUGHTS_QUERY = gql`
   }
 `;
 
-export const getOurThoughtsData = async () => {
+export const getOurThoughtsData = async (): Promise<OurThoughtsData> => {
   try {
-    const response = await graphqlClient.request(OUR_THOUGHTS_QUERY);
+    const response =
+      await graphqlClient.request<OurThoughtsResponse>(OUR_THOUGHTS_QUERY);
 
-    return response.ourThought;
+    return response.ourThought.data.attributes;
   } catch (error) {
     throw error;
   }

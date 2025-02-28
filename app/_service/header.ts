@@ -3,6 +3,7 @@ import { gql } from "graphql-request";
 
 import { graphqlClient } from "@/_lib/graphql-client";
 import { IMAGE_FRAGMENT } from "@/_graphql/fragments";
+import { HeaderData, HeaderResponse } from "@/_types/header";
 
 const HEADER_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -42,11 +43,11 @@ const HEADER_QUERY = gql`
   }
 `;
 
-export const getHeaderData = async () => {
+export const getHeaderData = async (): Promise<HeaderData> => {
   try {
-    const response = await graphqlClient.request(HEADER_QUERY);
+    const response = await graphqlClient.request<HeaderResponse>(HEADER_QUERY);
 
-    return response.header;
+    return response.header.data.attributes;
   } catch (error) {
     throw error;
   }

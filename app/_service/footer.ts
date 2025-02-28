@@ -3,6 +3,7 @@ import { gql } from "graphql-request";
 
 import { graphqlClient } from "@/_lib/graphql-client";
 import { IMAGE_FRAGMENT } from "@/_graphql/fragments";
+import { FooterData, FooterResponse } from "@/_types/footer";
 
 const FOOTER_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -39,12 +40,13 @@ const FOOTER_QUERY = gql`
   }
 `;
 
-export const getFooterData = async () => {
+export const getFooterData = async (): Promise<FooterData> => {
   try {
-    const response = await graphqlClient.request(FOOTER_QUERY);
+    const response = await graphqlClient.request<FooterResponse>(FOOTER_QUERY);
 
-    return response.footer;
+    return response.footer.data.attributes;
   } catch (error) {
+    console.error("Footer data fetch error:", error);
     throw error;
   }
 };

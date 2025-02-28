@@ -7,6 +7,7 @@ import {
   FOOTER_CTA_FRAGMENT,
   IMAGE_FRAGMENT,
 } from "@/_graphql/fragments";
+import { GraduateData, GraduateResponse } from "@/_types/graduate";
 
 const GRADUATE_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -47,12 +48,14 @@ const GRADUATE_QUERY = gql`
   }
 `;
 
-export const getGraduateData = async () => {
+export const getGraduateData = async (): Promise<GraduateData> => {
   try {
-    const response = await graphqlClient.request(GRADUATE_QUERY);
+    const response =
+      await graphqlClient.request<GraduateResponse>(GRADUATE_QUERY);
 
-    return response.careersGraduate;
+    return response.careersGraduate.data.attributes;
   } catch (error) {
+    console.error("Graduate data fetch error:", error);
     throw error;
   }
 };

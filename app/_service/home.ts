@@ -7,6 +7,7 @@ import {
   FOOTER_CTA_FRAGMENT,
   COMMON_BLOCKS_FRAGMENT,
 } from "@/_graphql/fragments";
+import { HomeData, HomeResponse } from "@/_types/home";
 
 const HOME_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -47,11 +48,11 @@ const HOME_QUERY = gql`
   }
 `;
 
-export const getHomeData = async () => {
+export const getHomeData = async (): Promise<HomeData> => {
   try {
-    const response = await graphqlClient.request(HOME_QUERY);
+    const response = await graphqlClient.request<HomeResponse>(HOME_QUERY);
 
-    return response.homePage;
+    return response.homePage.data.attributes;
   } catch (error) {
     throw error;
   }

@@ -36,3 +36,14 @@ export type contactUsFormType = {
     Variant?: string;
   };
 };
+
+export interface ContactFormResponse {
+  createContactFormSubmission: {
+    data: {
+      id: string;
+      attributes: {
+        createdAt: string;
+      };
+    };
+  };
+}

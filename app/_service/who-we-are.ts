@@ -7,6 +7,7 @@ import {
   FOOTER_CTA_FRAGMENT,
   COMMON_BLOCKS_FRAGMENT,
 } from "@/_graphql/fragments";
+import { WhoWeAreData, WhoWeAreResponse } from "@/_types/who-we-are";
 
 const WHO_WE_ARE_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -47,12 +48,14 @@ const WHO_WE_ARE_QUERY = gql`
   }
 `;
 
-export const getWhoWeareData = async () => {
+export const getWhoWeareData = async (): Promise<WhoWeAreData> => {
   try {
-    const response = await graphqlClient.request(WHO_WE_ARE_QUERY);
+    const response =
+      await graphqlClient.request<WhoWeAreResponse>(WHO_WE_ARE_QUERY);
 
-    return response.whoWeArePage;
+    return response.whoWeArePage.data.attributes;
   } catch (error) {
+    console.error("Error fetching who-we-are data:", error);
     throw error;
   }
 };

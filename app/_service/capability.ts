@@ -1,101 +1,32 @@
-// app/_service/capability.ts
-import { gql } from "graphql-request";
-
 import { graphqlClient } from "@/_lib/graphql-client";
-import {
-  IMAGE_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  COMMON_BLOCKS_FRAGMENT,
-} from "@/_graphql/fragments";
+import { GetAllCapabilitiesResponse } from "@/_types/capability";
 
-const CAPABILITY_BY_SLUG_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${COMMON_BLOCKS_FRAGMENT}
-
-  query GetCapabilityBySlug($slug: String!) {
-    capabilities(filters: { slug: { eq: $slug } }) {
-      data {
-        attributes {
-          documentId
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          blocks {
-            ...CommonBlocksFragment
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
-
-const ALL_CAPABILITIES_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-
+const ALL_CAPABILITIES_QUERY = `
   query GetAllCapabilities {
     capabilities {
       data {
+        id
         attributes {
           documentId
           title
-          description
           slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
+          description
+          // Include other fields
         }
       }
     }
   }
 `;
 
-export const getCapabilityBySlug = async (slug: string) => {
+export const getAllCapabilities = async () => {
   try {
-    const response = await graphqlClient.request(CAPABILITY_BY_SLUG_QUERY, {
-      slug,
-    });
+    const response = await graphqlClient.request<GetAllCapabilitiesResponse>(
+      ALL_CAPABILITIES_QUERY,
+    );
 
-    return response.capabilities;
+    return response.capabilities.data;
   } catch (error) {
-    throw error;
-  }
-};
-
-export const getAllCapabilitiesSlugs = async () => {
-  try {
-    const response = await graphqlClient.request(ALL_CAPABILITIES_QUERY);
-
-    return response.capabilities;
-  } catch (error) {
+    console.error("Error fetching capabilities:", error);
     throw error;
   }
 };

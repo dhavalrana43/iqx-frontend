@@ -7,6 +7,7 @@ import {
   FOOTER_CTA_FRAGMENT,
   COMMON_BLOCKS_FRAGMENT,
 } from "@/_graphql/fragments";
+import { CareersData, CareersResponse } from "@/_types/careers";
 
 const CAREERS_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -47,11 +48,12 @@ const CAREERS_QUERY = gql`
   }
 `;
 
-export const fetchCareersData = async () => {
+export const fetchCareersData = async (): Promise<CareersData> => {
   try {
-    const response = await graphqlClient.request(CAREERS_QUERY);
+    const response =
+      await graphqlClient.request<CareersResponse>(CAREERS_QUERY);
 
-    return response.careersPage;
+    return response.careersPage.data.attributes;
   } catch (error) {
     throw error;
   }

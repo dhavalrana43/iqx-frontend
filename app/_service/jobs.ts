@@ -3,6 +3,7 @@ import { gql } from "graphql-request";
 
 import { graphqlClient } from "@/_lib/graphql-client";
 import { IMAGE_FRAGMENT, FOOTER_CTA_FRAGMENT } from "@/_graphql/fragments";
+import { JobData, JobSearchData, JobSearchResponse } from "@/_types/jobs";
 
 const JOB_SEARCH_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -38,55 +39,44 @@ const JOB_SEARCH_QUERY = gql`
   }
 `;
 
-export const getJobSearchData = async () => {
+export const getJobSearchData = async (): Promise<JobSearchData> => {
   try {
-    const response = await graphqlClient.request(JOB_SEARCH_QUERY);
+    const response =
+      await graphqlClient.request<JobSearchResponse>(JOB_SEARCH_QUERY);
 
-    return response.jobSearchPage;
+    return response.jobSearchPage.data.attributes;
   } catch (error) {
+    console.error("Job search data fetch error:", error);
     throw error;
   }
 };
 
 // These functions don't interact with Strapi's GraphQL, so they remain unchanged
-export const fetchAllJobs = async () => {
+export const fetchAllJobs = async (): Promise<JobData[]> => {
   try {
-    const getAllJobsData = await fetch(
-      `${process.env.NEXT_PUBLIC_SIMPLIFY_HR_JOBS_URL}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `${process.env.NEXT_PUBLIC_AUTHORIZATION_SIMPLIFY_HR_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    const response = await fetch(process.env.NEXT_PUBLIC_SIMPLIFY_HR_JOBS_URL!);
 
-    const data = await getAllJobsData.json();
+    if (!response.ok) throw new Error("Failed to fetch jobs");
+    const data = await response.json();
 
-    return data?.Vacancies;
+    return data.items as JobData[];
   } catch (error) {
+    console.error("External jobs fetch error:", error);
     throw error;
   }
 };
-
-export const fetchSingleJob = async (id: string) => {
+export const fetchSingleJob = async (id: string): Promise<JobData> => {
   try {
-    const getJobData = await fetch(
-      `https://api.simplify.hr/v1/Vacancies/${id}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `${process.env.NEXT_PUBLIC_AUTHORIZATION_SIMPLIFY_HR_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      },
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SIMPLIFY_HR_SINGLE_JOB_URL}${id}`,
     );
 
-    const data = await getJobData.json();
+    if (!response.ok) throw new Error("Failed to fetch job details");
+    const data = await response.json();
 
-    return data?.VacancyInfo;
+    return data as JobData;
   } catch (error) {
+    console.error("Single job fetch error:", error);
     throw error;
   }
 };

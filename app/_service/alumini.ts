@@ -7,6 +7,7 @@ import {
   FOOTER_CTA_FRAGMENT,
   IMAGE_FRAGMENT,
 } from "@/_graphql/fragments";
+import { AluminiData, AluminiResponse } from "@/_types/alumini";
 
 const ALUMINI_QUERY = gql`
   ${IMAGE_FRAGMENT}
@@ -47,11 +48,12 @@ const ALUMINI_QUERY = gql`
   }
 `;
 
-export const getAluminiData = async () => {
+export const getAluminiData = async (): Promise<AluminiData> => {
   try {
-    const response = await graphqlClient.request(ALUMINI_QUERY);
+    const response =
+      await graphqlClient.request<AluminiResponse>(ALUMINI_QUERY);
 
-    return response.careersAlumniPage;
+    return response.careersAlumniPage.data.attributes;
   } catch (error) {
     throw error;
   }

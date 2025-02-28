@@ -1,146 +1,46 @@
-// app/_service/contact.ts
-import { gql } from "graphql-request";
+import { graphqlClient } from "@/_lib/graphql-client";
+import { ContactFormResponse } from "@/_types/contact-us-form";
 
-import { graphqlClient, getAuthenticatedClient } from "@/_lib/graphql-client";
-import {
-  IMAGE_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  BUTTON_FRAGMENT,
-  DETAILS_FRAGMENT,
-  VARIANT_FRAGMENT,
-} from "@/_graphql/fragments";
-
-const CONTACT_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${BUTTON_FRAGMENT}
-  ${DETAILS_FRAGMENT}
-  ${VARIANT_FRAGMENT}
-
-  query GetContactPage {
-    contactPage {
-      data {
-        attributes {
-          documentId
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          contactForm {
-            details {
-              ...DetailsFragment
-            }
-            form {
-              formFields {
-                __typename
-                ... on ComponentFormsInput {
-                  label
-                  name
-                  placeholder
-                  required
-                  type
-                }
-                ... on ComponentFormsTextarea {
-                  label
-                  name
-                  placeholder
-                  required
-                }
-                ... on ComponentFormsDropdown {
-                  label
-                  name
-                  placeholder
-                  required
-                  options {
-                    label
-                    value
-                  }
-                }
-              }
-            }
-            variant {
-              ...VariantFragment
-            }
-            buttonVarient {
-              ...VariantFragment
-            }
-            image {
-              ...ImageFragment
-            }
-          }
-          contactInfo {
-            contact {
-              contactLink {
-                title
-                url
-                icon {
-                  ...ImageFragment
-                }
-              }
-            }
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
+const CONTACT_FORM_MUTATION = `
+  mutation CreateContactFormSubmission(
+    $title: String!
+    $key: String!
+    $origin: String!
+    $data: JSON!
+  ) {
+    createContactFormSubmission(
+      data: {
+        title: $title
+        key: $key
+        origin: $origin
+        data: $data
       }
-    }
-  }
-`;
-
-const CREATE_INQUIRY_MUTATION = gql`
-  mutation CreateInquiry($data: InquiryInput!) {
-    createInquiry(data: $data) {
+    ) {
       data {
         id
         attributes {
-          key
-          title
+          createdAt
         }
       }
     }
   }
 `;
 
-export const getContactData = async () => {
+export const saveContactFormData = async (variables: {
+  title: string;
+  key: string;
+  origin: string;
+  data: Record<string, any>;
+}) => {
   try {
-    const response = await graphqlClient.request(CONTACT_QUERY);
+    const response = await graphqlClient.request<ContactFormResponse>(
+      CONTACT_FORM_MUTATION,
+      variables,
+    );
 
-    return (response as { contactPage: any }).contactPage;
+    return response.createContactFormSubmission;
   } catch (error) {
-    throw error;
-  }
-};
-
-export const saveContactFormData = async (data: any) => {
-  try {
-    const client = await getAuthenticatedClient();
-    const formattedData = {
-      key: data.key,
-      origin: data.origin,
-      title: data.title,
-      data: JSON.stringify(data),
-    };
-
-    const response = await client.request(CREATE_INQUIRY_MUTATION, {
-      data: formattedData,
-    });
-
-    return response.createInquiry;
-  } catch (error) {
+    console.error("Error submitting form:", error);
     throw error;
   }
 };
