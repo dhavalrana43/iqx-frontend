@@ -57,7 +57,7 @@ const ContactInfo = (props: any) => {
                                   />
                                   <Link
                                     className="text-base font-semibold underline underline-offset-4 hover:no-underline transition-all"
-                                    href={item.url ?? "/"}
+                                    href={item?.url ?? "/"}
                                   >
                                     {item.title}
                                   </Link>

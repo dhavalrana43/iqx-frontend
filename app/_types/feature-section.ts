@@ -17,6 +17,7 @@ export type featureSectionType = {
       width?: number;
     };
     url?: string;
+    bigCard?: boolean;
     tags?: Array<{
       text?: string;
       url?: string;

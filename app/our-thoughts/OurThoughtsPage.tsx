@@ -2,14 +2,16 @@
 import React, { useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@heroui/react";
 
-import SearchIcon from "@/_svg/Search Icon";
-import BLogMenu from "@/_svg/BLogMenu";
+import SearchIcon from "@/_svg/SearchIcon";
 import HeroSection from "@/_components/hero-section/HeroSection";
 import BlogCard from "@/_components/blog-card/BlogCard";
+import FullText from "@/_components/full-text/FullText";
+import BLogMenu from "@/_svg/BLogMenu";
 
 const OurThoughtsPage = ({
   blogs,
   heroBannerData,
+  theme,
   topics,
   industries,
   types,
@@ -34,8 +36,8 @@ const OurThoughtsPage = ({
 
   return (
     <section className="flex flex-col items-center justify-center">
-      <HeroSection {...(heroBannerData?.heroBanner ?? "")} />
-
+      <HeroSection {...(heroBannerData?.heroBanner ?? "")} theme={theme} />
+      <FullText {...heroBannerData?.block} theme={theme} />
       <div className="w-full py-16 lg:py-24 bg-white">
         <div className="container mx-auto">
           <div className="flex flex-col gap-28">

@@ -1,3 +1,4 @@
+// app\capabilities\[capability]\page.tsx
 import React, { Suspense } from "react";
 import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";

@@ -1,4 +1,4 @@
-"use client";
+"use cleint";
 import React from "react";
 
 import HeroSection from "@/_components/hero-section/HeroSection";
@@ -10,8 +10,9 @@ function blockRenderer(block: any, index: number, theme: any) {
 
   return Component ? <Component key={index} {...block} theme={theme} /> : null;
 }
-const CareersPage = (props: any) => {
-  const { blocks, heroBanner, theme } = props;
+
+const GraduatePage = ({ pageData }: any) => {
+  const { blocks, heroBanner, theme } = pageData;
 
   return (
     <section className="flex flex-col items-center justify-center">
@@ -23,4 +24,4 @@ const CareersPage = (props: any) => {
   );
 };
 
-export default CareersPage;
+export default GraduatePage;

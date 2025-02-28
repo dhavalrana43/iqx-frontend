@@ -67,12 +67,12 @@ const OurThoughts = async () => {
 
     const fetchOurThoughtsData = await getOurThoughtsCached();
 
-    const { title, description, heroBanner, details, footerCta } =
+    const { title, description, heroBanner, block, footerCta, theme } =
       fetchOurThoughtsData?.data;
 
     const heroBannerData = {
       heroBanner,
-      details,
+      block,
     };
 
     const allBlogTopics = await getBlogsTopicsCached();
@@ -94,6 +94,7 @@ const OurThoughts = async () => {
           blogs={blogs?.data}
           heroBannerData={heroBannerData}
           industries={allBlogsIndustries?.data}
+          theme={theme}
           topics={allBlogTopics?.data}
           types={allBlogsTypes?.data}
         />

@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Divider } from "@heroui/divider";
 import * as motion from "motion/react-client"; // Importing motion utilities
@@ -46,14 +47,14 @@ const FactCard = ({ facts }: any) => {
   const variantFactClassName =
     facts?.variant?.Variant && typeof facts?.variant?.Variant === "string"
       ? `custom-bg-${facts?.variant?.Variant.toLowerCase()}`
-      : "custom-bg-dark";
+      : "custom-bg-gradient";
 
   return (
     <motion.div
       ref={ref}
       animate={isInView ? { opacity: 1 } : {}}
       className={clsx(
-        "py-8 px-12 flex flex-col justify-between rounded-lg gap-8 lg:col-span-2",
+        "py-8 px-12 flex flex-col justify-center rounded-lg gap-8 lg:col-span-2",
         variantFactClassName,
       )}
       initial={{ opacity: 0 }}
@@ -61,8 +62,21 @@ const FactCard = ({ facts }: any) => {
     >
       <div className="flex flex-col">
         <div className="flex lg:items-center flex-row items-center lg:flex-row">
+          {facts?.pre1 && (
+            <h3
+              dangerouslySetInnerHTML={{
+                __html: facts?.pre1,
+              }}
+              className="text-4xl font-bold fact-title pr-2 lg:pr-4 "
+            />
+          )}
           {counter1 && (
-            <h3 className="text-8xl font-bold fact-title">{counter1}</h3>
+            <h3
+              dangerouslySetInnerHTML={{
+                __html: counter1,
+              }}
+              className="text-8xl font-bold fact-title"
+            />
           )}
           {facts?.operator1 && (
             <h3
@@ -73,25 +87,52 @@ const FactCard = ({ facts }: any) => {
             />
           )}
         </div>
-        <p className="text-sm">{facts?.detail1}</p>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: facts?.detail1,
+          }}
+          className="text-sm"
+        />
       </div>
-      <Divider />
-      <div className="flex flex-col">
-        <div className="flex">
-          {counter2 != null && (
-            <h4 className="text-8xl font-bold fact-title">{counter2} </h4>
-          )}
-          {facts?.operator2 && (
-            <h4
+      {counter2 != null && counter2 !== 0 && (
+        <>
+          <Divider />
+          <div className="flex flex-col">
+            <div className="flex">
+              {facts?.pre2 && (
+                <h3
+                  dangerouslySetInnerHTML={{
+                    __html: facts?.pre2,
+                  }}
+                  className="text-4xl font-bold fact-title pr-2 lg:pr-4 "
+                />
+              )}
+              {counter2 && (
+                <h4
+                  dangerouslySetInnerHTML={{
+                    __html: counter2,
+                  }}
+                  className="text-8xl font-bold fact-title"
+                />
+              )}
+              {facts?.operator2 && (
+                <h4
+                  dangerouslySetInnerHTML={{
+                    __html: facts?.operator2,
+                  }}
+                  className="text-8xl font-bold fact-title"
+                />
+              )}
+            </div>
+            <p
               dangerouslySetInnerHTML={{
-                __html: facts?.operator2,
+                __html: facts?.detail2,
               }}
-              className="text-8xl font-bold fact-title"
+              className="text-sm"
             />
-          )}
-        </div>
-        <p className="text-sm">{facts?.detail2}</p>
-      </div>
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };

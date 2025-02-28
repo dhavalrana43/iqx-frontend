@@ -2,9 +2,9 @@ import qs from "qs";
 
 import { siteConfig } from "@/_config/site";
 import { fetchData } from "@/_data/loaders";
-import { commonBlocks } from "@/_service/common-service-components/common-blocks";
 
 import { footerBlock } from "./common-service-components/footer";
+import { commonBlocks } from "./common-service-components/common-blocks";
 
 const baseUrl = siteConfig.apiUrl;
 

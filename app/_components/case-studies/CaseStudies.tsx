@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import { caseStudiesType } from "@/_types/case-studies";

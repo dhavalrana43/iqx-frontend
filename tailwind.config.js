@@ -196,7 +196,7 @@ module.exports = {
     heroui({
       themes: {
         "iqx-dark": {
-          extend: "dark", // <- inherit default values from dark theme
+          extend: "dark",
           colors: {
             background: "#222934",
             foreground: "#ffffff",

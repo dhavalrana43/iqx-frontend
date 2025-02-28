@@ -3,14 +3,14 @@ import { unstable_cache } from "next/cache";
 
 import { getHomeData } from "@/_service/home";
 import { siteConfig } from "@/_config/site";
-import CustomHead from "@/_components/custom-head/CustomHead";
 import FooterCTA from "@/_components/footer-cta/FooterCTA";
+import CustomHead from "@/_components/custom-head/CustomHead";
 
 import HomePage from "./HomePage";
 
 const getHomeDataCached = unstable_cache(getHomeData, ["home-page"], {
   revalidate: siteConfig.revalidateTime,
-  tags: ["home"],
+  tags: ["home-page"],
 });
 
 const Home = async () => {

@@ -3,14 +3,14 @@ import qs from "qs";
 import { siteConfig } from "@/_config/site";
 import { fetchData } from "@/_data/loaders";
 
-import { commonBlocks } from "./common-service-components/common-blocks";
 import { footerBlock } from "./common-service-components/footer";
+import { commonBlocks } from "./common-service-components/common-blocks";
 
 const baseUrl = siteConfig.apiUrl;
 
-export const fetchCareersData = async () => {
+export const getAluminiData = async () => {
   try {
-    const url = new URL("/api/careers-page", baseUrl);
+    const url = new URL("/api/careers-alumni-page", baseUrl);
 
     url.search = qs.stringify({
       fields: ["documentId", "title", "description", "slug"],

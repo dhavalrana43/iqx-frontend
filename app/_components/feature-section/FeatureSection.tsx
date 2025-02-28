@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Chip } from "@heroui/chip";
 import clsx from "clsx";
@@ -32,7 +33,7 @@ const FeatureSection = (props: featureSectionType) => {
 
   return (
     <section
-      aria-label="feature slider"
+      aria-label="feature section"
       className={clsx("w-full py-16 lg:py-24", variantClassName)}
     >
       <div className="container mx-auto">

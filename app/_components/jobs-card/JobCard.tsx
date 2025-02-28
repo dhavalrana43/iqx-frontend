@@ -1,4 +1,4 @@
-// app/_components/jobs-card/JobCard.tsx
+"use client";
 import Link from "next/link";
 import React from "react";
 import { FaArrowRightLong } from "react-icons/fa6";

@@ -4,6 +4,7 @@ import { siteConfig } from "@/_config/site";
 import { fetchData, postData } from "@/_data/loaders";
 
 import { getAuthToken } from "./auth";
+import { footerBlock } from "./common-service-components/footer";
 
 const baseUrl = siteConfig.apiUrl;
 
@@ -54,6 +55,7 @@ export const getContactData = async () => {
             buttonVarient: {
               populate: "*",
             },
+
             image: {
               populate: {
                 fields: ["url", "alternativeText", "height", "width"],
@@ -61,19 +63,22 @@ export const getContactData = async () => {
             },
           },
         },
-        footerCta: {
+        contactInfo: {
+          fields: ["*"],
           populate: {
-            ctaImage: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-            details: {
-              populate: true,
-            },
-            ctaButton: {
-              populate: "*",
+            contact: {
+              fields: ["*"],
+              populate: {
+                contactLink: {
+                  fields: ["*"],
+                  populate: ["icon"],
+                },
+              },
             },
           },
         },
+
+        footerCta: footerBlock,
       },
     });
 

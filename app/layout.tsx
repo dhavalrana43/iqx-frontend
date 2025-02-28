@@ -1,5 +1,4 @@
 import "../styles/globals.css";
-import { Viewport } from "next";
 import clsx from "clsx";
 import { unstable_cache } from "next/cache";
 
@@ -13,10 +12,7 @@ import { getFooterData } from "./_service/footer";
 import ErrorBoundary from "./errorBoundary";
 import { siteConfig } from "./_config/site";
 import { getStrapiAssetURI } from "./_data/loaders";
-
-export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: dark)", color: "black" }],
-};
+import { getHomeData } from "./_service/home";
 
 const getHeaderCached = unstable_cache(getHeaderData, ["header"], {
   revalidate: siteConfig.revalidateTime,
@@ -28,20 +24,40 @@ const getFooterCached = unstable_cache(getFooterData, ["footer"], {
   tags: ["footer"],
 });
 
+export async function generateMetadata() {
+  const [metadata, headerData] = await Promise.all([
+    getHomeData(),
+    getHeaderCached(),
+  ]);
+
+  const { title, description } = metadata?.data;
+
+  const faviconUrl =
+    getStrapiAssetURI(headerData.data.favicon.url) ?? "/favicon.svg";
+
+  return {
+    title: title ?? "IQBusiness",
+    description:
+      description ??
+      "Welcome to our new era. We have joined forces with +OneX to form a leading Digital Integrator. Together, we offer a full-service suite of digital services.",
+    icons: {
+      icon: faviconUrl,
+    },
+  };
+}
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [headerData, footerData] = await Promise.all([
-    getHeaderCached(),
-    getFooterCached(),
-  ]);
+  const headerData = await getHeaderCached();
+
+  const footerData = await getFooterCached();
 
   return (
     <html lang="en">
-      {headerData?.data?.logoImage && (
-        <head>
+      <head>
+        {headerData?.data?.logoImage && (
           <link
             as="image"
             crossOrigin="anonymous"
@@ -51,8 +67,8 @@ export default async function RootLayout({
             rel="preload"
             type="image/svg+xml"
           />
-        </head>
-      )}
+        )}
+      </head>
 
       <body
         suppressHydrationWarning

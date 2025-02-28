@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import clsx from "clsx";
 import * as motion from "motion/react-client";

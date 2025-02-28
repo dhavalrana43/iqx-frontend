@@ -1,21 +1,26 @@
 export type factWithTaskType = {
-  details?: {
+  variant?: {
+    Variant?: string;
+  };
+  content?: {
+    id?: string;
     title?: string;
     subHeading?: string;
     description?: string;
   };
-  facts?: {
+  factCard?: {
+    id?: string;
     counter1?: string;
-    operator1?: string;
     detail1?: string;
     counter2?: string;
-    operator2?: string;
     detail2?: string;
-    variant?: {
-      Variant?: string;
-    };
+    operator1?: string;
+    operator2?: string;
+    pre1?: string;
+    pre2?: string;
   };
-  variant?: {
-    Variant?: string;
+  theme?: {
+    id?: string;
+    color?: string;
   };
 };

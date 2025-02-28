@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["stagingadmin.iqbusiness.net", "iqbusiness-backend.onrender.com"],
     remotePatterns: [
       {
         protocol: "http",

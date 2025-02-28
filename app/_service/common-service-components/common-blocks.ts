@@ -29,18 +29,8 @@ export const commonBlocks = {
         },
       },
     },
-    "common.facts-with-text": {
-      populate: {
-        details: {
-          populate: "*",
-        },
-        facts: {
-          populate: "*",
-        },
-        variant: {
-          populate: "*",
-        },
-      },
+    "common.text-with-facts": {
+      populate: "*",
     },
     "common.faqs": {
       populate: {
@@ -138,19 +128,19 @@ export const commonBlocks = {
         },
       },
     },
-    // "common.leaderships": {
-    //   populate: {
-    //     details: {
-    //       populate: "*",
-    //     },
-    //     leaderships: {
-    //       populate: "*",
-    //     },
-    //     variant: {
-    //       populate: "*",
-    //     },
-    //   },
-    // },
+    "common.leaderships": {
+      populate: {
+        details: {
+          populate: "*",
+        },
+        leaderships: {
+          populate: "*",
+        },
+        variant: {
+          populate: "*",
+        },
+      },
+    },
     "common.our-thoughts": {
       populate: {
         details: {
@@ -177,19 +167,9 @@ export const commonBlocks = {
         fields: ["darkMode"],
       },
     },
-    // "common.process": {
-    //   populate: {
-    //     details: {
-    //       populate: "*",
-    //     },
-    //     process: {
-    //       populate: "*",
-    //     },
-    //     variant: {
-    //       populate: "*",
-    //     },
-    //   },
-    // },
+    "common.process": {
+      populate: "*",
+    },
     "common.questions-slider": {
       populate: {
         details: {

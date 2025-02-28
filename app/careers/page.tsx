@@ -8,12 +8,12 @@ import FooterCTA from "@/_components/footer-cta/FooterCTA";
 
 import CareersPage from "./CareersPage";
 
-const Careers = async () => {
-  const getCareersCached = unstable_cache(fetchCareersData, ["career-page"], {
-    revalidate: siteConfig.revalidateTime,
-    tags: ["career-page"],
-  });
+const getCareersCached = unstable_cache(fetchCareersData, ["careers"], {
+  revalidate: siteConfig.revalidateTime,
+  tags: ["careers"],
+});
 
+const Careers = async () => {
   const getCareersData = await getCareersCached();
 
   return (

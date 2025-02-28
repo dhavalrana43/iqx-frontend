@@ -2,7 +2,8 @@ import qs from "qs";
 
 import { siteConfig } from "@/_config/site";
 import { fetchData } from "@/_data/loaders";
-import { commonBlocks } from "@/_service/common-service-components/common-blocks";
+
+import { footerBlock } from "./common-service-components/footer";
 
 const baseUrl = siteConfig.apiUrl;
 
@@ -24,21 +25,32 @@ export const getWhoWeareData = async () => {
             },
           },
         },
-        blocks: commonBlocks,
-
-        footerCta: {
-          populate: {
-            ctaImage: {
-              fields: ["url", "alternativeText", "height", "width"],
-            },
-            details: {
-              populate: true,
-            },
-            ctaButton: {
-              populate: "*",
+        // blocks: commonBlocks,
+        blocks: {
+          on: {
+            "common.leaderships": {
+              populate: {
+                details: {
+                  fields: ["title", "subHeading", "description"],
+                },
+                leaderships: {
+                  populate: {
+                    fields: ["name", "designation", "url"],
+                    profile: {
+                      fields: ["url", "alternativeText", "width", "height"],
+                    },
+                  },
+                },
+                variant: {
+                  populate: {
+                    fields: ["Variant"],
+                  },
+                },
+              },
             },
           },
         },
+        footerCta: footerBlock,
       },
     });
 
