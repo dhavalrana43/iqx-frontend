@@ -1,15 +1,24 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 import { ctaCardType } from "@/_types/cta-card";
 import FallbackImage from "@/_images/default.jpg";
+import homeBackgroundImage from "@/_images/home-background-image.jpg";
 
 import CustomButton from "../custom-button/CustomButton";
 import CustomImage from "../custom-image/CustomImage";
 
 const CTACard = (props: ctaCardType) => {
   const { details, ctaButton, image, variant } = props;
+
+  const [path, setPath] = useState("");
+  const pathName = usePathname();
+
+  useEffect(() => {
+    setPath(pathName);
+  }, []);
 
   const variantClassName =
     variant && typeof variant.Variant === "string"
@@ -20,9 +29,16 @@ const CTACard = (props: ctaCardType) => {
     <section
       aria-label="CTA card"
       className={clsx("w-full py-16 lg:py-24", variantClassName)}
+      style={{
+        backgroundImage:
+          path === "/" ? `url(${homeBackgroundImage.src})` : "none",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
     >
       <div className="container mx-auto">
-        <div className="custom-bg-gradient rounded-lg">
+        <div className={clsx(" rounded-lg", variantClassName)}>
           <div
             className={clsx(
               "grid  py-20 px-5 lg:px-20 gap-10",

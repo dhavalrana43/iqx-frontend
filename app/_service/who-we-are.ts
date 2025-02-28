@@ -1,61 +1,38 @@
-// app/_service/who-we-are.ts
-import { gql } from "graphql-request";
+import qs from "qs";
 
-import { graphqlClient } from "@/_lib/graphql-client";
-import {
-  IMAGE_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  COMMON_BLOCKS_FRAGMENT,
-} from "@/_graphql/fragments";
-import { WhoWeAreData, WhoWeAreResponse } from "@/_types/who-we-are";
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
+import { commonBlocks } from "@/_service/common/common-blocks";
 
-const WHO_WE_ARE_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${COMMON_BLOCKS_FRAGMENT}
+import { footerBlock } from "./common/footer";
 
-  query GetWhoWeArePage {
-    whoWeArePage {
-      data {
-        attributes {
-          documentId
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          blocks {
-            ...CommonBlocksFragment
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
+const baseUrl = siteConfig.apiUrl;
 
-export const getWhoWeareData = async (): Promise<WhoWeAreData> => {
+export const getWhoWeareData = async () => {
   try {
-    const response =
-      await graphqlClient.request<WhoWeAreResponse>(WHO_WE_ARE_QUERY);
+    const url = new URL("/api/who-we-are-page", baseUrl);
 
-    return response.whoWeArePage.data.attributes;
+    url.search = qs.stringify({
+      fields: ["documentId", "title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          fields: ["title"],
+          populate: {
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        blocks: commonBlocks,
+        footerCta: footerBlock,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
-    console.error("Error fetching who-we-are data:", error);
     throw error;
   }
 };

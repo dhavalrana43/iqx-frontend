@@ -1,61 +1,38 @@
-// app/_service/graduate.ts
-import { gql } from "graphql-request";
+import qs from "qs";
 
-import { graphqlClient } from "@/_lib/graphql-client";
-import {
-  COMMON_BLOCKS_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  IMAGE_FRAGMENT,
-} from "@/_graphql/fragments";
-import { GraduateData, GraduateResponse } from "@/_types/graduate";
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
 
-const GRADUATE_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${COMMON_BLOCKS_FRAGMENT}
+import { footerBlock } from "./common/footer";
+import { commonBlocks } from "./common/common-blocks";
 
-  query GetGraduatePage {
-    careersGraduate {
-      data {
-        attributes {
-          documentId
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          blocks {
-            ...CommonBlocksFragment
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
+const baseUrl = siteConfig.apiUrl;
 
-export const getGraduateData = async (): Promise<GraduateData> => {
+export const getGraduateData = async () => {
   try {
-    const response =
-      await graphqlClient.request<GraduateResponse>(GRADUATE_QUERY);
+    const url = new URL("/api/careers-graduate", baseUrl);
 
-    return response.careersGraduate.data.attributes;
+    url.search = qs.stringify({
+      fields: ["documentId", "title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          fields: ["title"],
+          populate: {
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        blocks: commonBlocks,
+        footerCta: footerBlock,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
-    console.error("Graduate data fetch error:", error);
     throw error;
   }
 };

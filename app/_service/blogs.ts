@@ -1,46 +1,154 @@
-import { graphqlClient } from "@/_lib/graphql-client";
-import { GetAllBlogsResponse } from "@/_types/blogs";
+import qs from "qs";
 
-const ALL_BLOGS_QUERY = `
-  query GetAllBlogs($offset: Int, $limit: Int) {
-    blogs(pagination: { offset: $offset, limit: $limit }) {
-      data {
-        id
-        attributes {
-          documentId
-          title
-          slug
-          date
-          readingTime
-          bannerImage {
-            data {
-              attributes {
-                url
-                alternativeText
-              }
-            }
-          }
-        }
-      }
-      meta {
-        pagination {
-          total
-        }
-      }
-    }
-  }
-`;
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
+
+const baseUrl = siteConfig.apiUrl;
 
 export const getAllBlogsData = async (offset = 0, limit = 9) => {
   try {
-    const response = await graphqlClient.request<GetAllBlogsResponse>(
-      ALL_BLOGS_QUERY,
-      { offset, limit },
-    );
+    const url = new URL("/api/blogs", baseUrl);
 
-    return response.blogs;
+    url.search = qs.stringify({
+      fields: [
+        "documentId",
+        "title",
+        "author",
+        "date",
+        "readingTime",
+        "content",
+        "slug",
+      ],
+      populate: {
+        bannerImage: {
+          fields: ["url", "alternativeText", "height", "width"],
+        },
+        topics: {
+          fields: ["name"],
+        },
+        industries: {
+          fields: ["name"],
+        },
+        types: {
+          fields: ["name"],
+        },
+      },
+      sort: ["date:desc"], // Sort by date in descending order
+      pagination: {
+        start: offset,
+        limit,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    throw error;
+  }
+};
+
+// For the OurThoughtsSlider component, create a specific function
+export const getLatestBlogs = async (limit = 6) => {
+  try {
+    const url = new URL("/api/blogs", baseUrl);
+
+    url.search = qs.stringify({
+      fields: [
+        "documentId",
+        "title",
+        "author",
+        "date",
+        "readingTime",
+        "content",
+        "slug",
+      ],
+      populate: {
+        bannerImage: {
+          fields: ["url", "alternativeText", "height", "width"],
+        },
+      },
+      sort: ["date:desc"], // Sort by date in descending order
+      pagination: {
+        start: 0,
+        limit,
+      },
+    });
+
+    return await fetchData(url.href);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getBlogDataById = async (documentId: string) => {
+  try {
+    const url = new URL(`/api/blogs/${documentId}`, baseUrl);
+
+    url.search = qs.stringify({
+      fields: [
+        "documentId",
+        "title",
+        "author",
+        "date",
+        "readingTime",
+        "content",
+      ],
+      populate: {
+        bannerImage: {
+          fields: ["url", "alternativeText", "height", "width"],
+        },
+      },
+    });
+
+    const response = await fetchData(url.href);
+
+    if (response.data) {
+      return response.data;
+    }
+
+    return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllBlogsTopics = async () => {
+  try {
+    const url = new URL(`/api/topics`, baseUrl);
+
+    url.search = qs.stringify({
+      fields: ["name"],
+    });
+
+    return await fetchData(url.href);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllBlogsIndutries = async () => {
+  try {
+    const url = new URL(`/api/industries`, baseUrl);
+
+    url.search = qs.stringify({
+      fields: ["name"],
+    });
+
+    return await fetchData(url.href);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllBLogsType = async () => {
+  try {
+    const url = new URL(`/api/types`, baseUrl);
+
+    url.search = qs.stringify({
+      fields: ["name"],
+    });
+
+    return await fetchData(url.href);
+  } catch (error) {
     throw error;
   }
 };

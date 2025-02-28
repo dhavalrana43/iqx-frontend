@@ -1,65 +1,45 @@
-// app/_service/our-thoughts.ts
-import { gql } from "graphql-request";
+import qs from "qs";
 
-import { graphqlClient } from "@/_lib/graphql-client";
-import {
-  IMAGE_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  DETAILS_FRAGMENT,
-  VARIANT_FRAGMENT,
-} from "@/_graphql/fragments";
-import { OurThoughtsData, OurThoughtsResponse } from "@/_types/our-thoughts";
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
 
-const OUR_THOUGHTS_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${DETAILS_FRAGMENT}
-  ${VARIANT_FRAGMENT}
+import { footerBlock } from "./common/footer";
 
-  query GetOurThoughtsPage {
-    ourThought {
-      data {
-        attributes {
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          block {
-            details {
-              ...DetailsFragment
-            }
-            variant {
-              ...VariantFragment
-            }
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
+const baseUrl = siteConfig.apiUrl;
 
-export const getOurThoughtsData = async (): Promise<OurThoughtsData> => {
+export const getOurThoughtsData = async () => {
   try {
-    const response =
-      await graphqlClient.request<OurThoughtsResponse>(OUR_THOUGHTS_QUERY);
+    const url = new URL("/api/our-thought", baseUrl);
 
-    return response.ourThought.data.attributes;
+    url.search = qs.stringify({
+      fields: ["title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          populate: {
+            fields: ["title"],
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        block: {
+          populate: {
+            details: {
+              populate: "*",
+            },
+            variant: {
+              populate: "*",
+            },
+          },
+        },
+        footerCta: footerBlock,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
     throw error;
   }

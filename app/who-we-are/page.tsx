@@ -9,7 +9,7 @@ import FooterCTA from "@/_components/footer-cta/FooterCTA";
 import WhoWeArePage from "./WhoWeArePage";
 
 const WhoWeAre = async () => {
-  const getWhoWeAreCached = unstable_cache(getWhoWeareData, ["who-we-are"], {
+  const getWhoWeAreCached = unstable_cache(getWhoWeareData, ["wh-we-are"], {
     revalidate: siteConfig.revalidateTime,
     tags: ["who-we-are"],
   });

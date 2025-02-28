@@ -1,58 +1,37 @@
-// app/_service/home.ts
-import { gql } from "graphql-request";
+import qs from "qs";
 
-import { graphqlClient } from "@/_lib/graphql-client";
-import {
-  IMAGE_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  COMMON_BLOCKS_FRAGMENT,
-} from "@/_graphql/fragments";
-import { HomeData, HomeResponse } from "@/_types/home";
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
 
-const HOME_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${COMMON_BLOCKS_FRAGMENT}
+import { footerBlock } from "./common/footer";
+import { commonBlocks } from "./common/common-blocks";
 
-  query GetHomePage {
-    homePage {
-      data {
-        attributes {
-          documentId
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          blocks {
-            ...CommonBlocksFragment
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
+const baseUrl = siteConfig.apiUrl;
 
-export const getHomeData = async (): Promise<HomeData> => {
+export const getHomeData = async () => {
   try {
-    const response = await graphqlClient.request<HomeResponse>(HOME_QUERY);
+    const url = new URL("/api/home-page", baseUrl);
 
-    return response.homePage.data.attributes;
+    url.search = qs.stringify({
+      fields: ["documentId", "title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          fields: ["title"],
+          populate: {
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        blocks: commonBlocks,
+        footerCta: footerBlock,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
     throw error;
   }

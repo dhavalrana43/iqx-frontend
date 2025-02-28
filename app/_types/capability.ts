@@ -31,20 +31,3 @@ export interface CapabilityPageProps {
     capability: string;
   };
 }
-
-export interface CapabilityData {
-  id: string;
-  attributes: {
-    documentId: string;
-    title: string;
-    slug: string;
-    description: string;
-    // Add other fields from your schema
-  };
-}
-
-export interface GetAllCapabilitiesResponse {
-  capabilities: {
-    data: CapabilityData[];
-  };
-}

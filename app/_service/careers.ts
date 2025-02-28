@@ -1,59 +1,37 @@
-// app/_service/careers.ts
-import { gql } from "graphql-request";
+import qs from "qs";
 
-import { graphqlClient } from "@/_lib/graphql-client";
-import {
-  IMAGE_FRAGMENT,
-  FOOTER_CTA_FRAGMENT,
-  COMMON_BLOCKS_FRAGMENT,
-} from "@/_graphql/fragments";
-import { CareersData, CareersResponse } from "@/_types/careers";
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
 
-const CAREERS_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
-  ${COMMON_BLOCKS_FRAGMENT}
+import { commonBlocks } from "./common/common-blocks";
+import { footerBlock } from "./common/footer";
 
-  query GetCareersPage {
-    careersPage {
-      data {
-        attributes {
-          documentId
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          blocks {
-            ...CommonBlocksFragment
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
+const baseUrl = siteConfig.apiUrl;
 
-export const fetchCareersData = async (): Promise<CareersData> => {
+export const fetchCareersData = async () => {
   try {
-    const response =
-      await graphqlClient.request<CareersResponse>(CAREERS_QUERY);
+    const url = new URL("/api/careers-page", baseUrl);
 
-    return response.careersPage.data.attributes;
+    url.search = qs.stringify({
+      fields: ["documentId", "title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          fields: ["title"],
+          populate: {
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        blocks: commonBlocks,
+        footerCta: footerBlock,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
     throw error;
   }

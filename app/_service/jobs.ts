@@ -1,82 +1,89 @@
-// app/_service/jobs.ts
-import { gql } from "graphql-request";
+// app\_service\jobs.ts
+import qs from "qs";
 
-import { graphqlClient } from "@/_lib/graphql-client";
-import { IMAGE_FRAGMENT, FOOTER_CTA_FRAGMENT } from "@/_graphql/fragments";
-import { JobData, JobSearchData, JobSearchResponse } from "@/_types/jobs";
+import { siteConfig } from "@/_config/site";
+import { fetchData } from "@/_data/loaders";
 
-const JOB_SEARCH_QUERY = gql`
-  ${IMAGE_FRAGMENT}
-  ${FOOTER_CTA_FRAGMENT}
+const baseUrl = siteConfig.apiUrl;
 
-  query GetJobSearchPage {
-    jobSearchPage {
-      data {
-        attributes {
-          title
-          description
-          slug
-          theme {
-            data {
-              attributes {
-                mainColor
-                secondaryColor
-              }
-            }
-          }
-          heroBanner {
-            title
-            image {
-              ...ImageFragment
-            }
-          }
-          footerCta {
-            ...FooterCtaFragment
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const getJobSearchData = async (): Promise<JobSearchData> => {
+export const getJobSearchData = async () => {
   try {
-    const response =
-      await graphqlClient.request<JobSearchResponse>(JOB_SEARCH_QUERY);
+    const url = new URL("/api/job-search-page", baseUrl);
 
-    return response.jobSearchPage.data.attributes;
+    url.search = qs.stringify({
+      fields: ["title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          populate: {
+            fields: ["title"],
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        footerCta: {
+          populate: {
+            ctaImage: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+            details: {
+              populate: true,
+            },
+            ctaButton: {
+              populate: "*",
+            },
+          },
+        },
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
-    console.error("Job search data fetch error:", error);
     throw error;
   }
 };
 
-// These functions don't interact with Strapi's GraphQL, so they remain unchanged
-export const fetchAllJobs = async (): Promise<JobData[]> => {
+export const fetchAllJobs = async () => {
   try {
-    const response = await fetch(process.env.NEXT_PUBLIC_SIMPLIFY_HR_JOBS_URL!);
-
-    if (!response.ok) throw new Error("Failed to fetch jobs");
-    const data = await response.json();
-
-    return data.items as JobData[];
-  } catch (error) {
-    console.error("External jobs fetch error:", error);
-    throw error;
-  }
-};
-export const fetchSingleJob = async (id: string): Promise<JobData> => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SIMPLIFY_HR_SINGLE_JOB_URL}${id}`,
+    const getAllJobsData = await fetch(
+      `${process.env.NEXT_PUBLIC_SIMPLIFY_HR_JOBS_URL}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `${process.env.NEXT_PUBLIC_AUTHORIZATION_SIMPLIFY_HR_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      },
     );
 
-    if (!response.ok) throw new Error("Failed to fetch job details");
-    const data = await response.json();
+    const data = await getAllJobsData.json();
 
-    return data as JobData;
+    return data?.Vacancies;
   } catch (error) {
-    console.error("Single job fetch error:", error);
+    throw error;
+  }
+};
+
+export const fetchSingleJob = async (id: string) => {
+  try {
+    const getJobData = await fetch(
+      `https://api.simplify.hr/v1/Vacancies/${id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `${process.env.NEXT_PUBLIC_AUTHORIZATION_SIMPLIFY_HR_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await getJobData.json();
+
+    return data?.VacancyInfo;
+  } catch (error) {
     throw error;
   }
 };

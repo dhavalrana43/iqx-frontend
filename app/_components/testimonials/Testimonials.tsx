@@ -14,7 +14,7 @@ const Testimonials = (props: testimonialTpye) => {
   const { title, description, testimonial } = props;
 
   return (
-    <section aria-label="CTA card" className="w-full py-16 lg:py-24">
+    <section aria-label="testimonials" className="w-full py-16 lg:py-24">
       <div className="2xl:pl-48 xl:pl-20 pl-5">
         <div className="grid gap-10 lg:grid-cols-6 grid-cols-1 ">
           <div className="lg:col-span-2 grid gap-5">

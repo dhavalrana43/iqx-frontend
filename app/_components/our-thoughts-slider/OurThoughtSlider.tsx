@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Chip, Spinner } from "@heroui/react";
+import { Autoplay } from "swiper/modules";
 
 import { getLatestBlogs } from "@/_service/blogs";
 import { ourThoughtsType } from "@/_types/our-thoughts";
@@ -138,6 +139,7 @@ const OurThoughtsSlider = (props: ourThoughtsType) => {
             freeMode={true}
             grabCursor={true}
             loop={true}
+            modules={[Autoplay]}
             slidesPerView={1}
             spaceBetween={50}
             onSlideChange={(swiper) => handleSlideChange(swiper)}

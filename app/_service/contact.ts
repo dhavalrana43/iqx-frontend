@@ -1,46 +1,110 @@
-import { graphqlClient } from "@/_lib/graphql-client";
-import { ContactFormResponse } from "@/_types/contact-us-form";
+import qs from "qs";
 
-const CONTACT_FORM_MUTATION = `
-  mutation CreateContactFormSubmission(
-    $title: String!
-    $key: String!
-    $origin: String!
-    $data: JSON!
-  ) {
-    createContactFormSubmission(
-      data: {
-        title: $title
-        key: $key
-        origin: $origin
-        data: $data
-      }
-    ) {
-      data {
-        id
-        attributes {
-          createdAt
-        }
-      }
-    }
-  }
-`;
+import { siteConfig } from "@/_config/site";
+import { fetchData, postData } from "@/_data/loaders";
 
-export const saveContactFormData = async (variables: {
-  title: string;
-  key: string;
-  origin: string;
-  data: Record<string, any>;
-}) => {
+import { getAuthToken } from "./auth";
+import { footerBlock } from "./common/footer";
+
+const baseUrl = siteConfig.apiUrl;
+
+export const getContactData = async () => {
   try {
-    const response = await graphqlClient.request<ContactFormResponse>(
-      CONTACT_FORM_MUTATION,
-      variables,
-    );
+    const url = new URL("/api/contact-page", baseUrl);
 
-    return response.createContactFormSubmission;
+    url.search = qs.stringify({
+      fields: ["documentId", "title", "description", "slug"],
+      populate: {
+        theme: {
+          populate: "*",
+        },
+        heroBanner: {
+          fields: ["title"],
+          populate: {
+            image: {
+              fields: ["url", "alternativeText", "height", "width"],
+            },
+          },
+        },
+        contactForm: {
+          populate: {
+            fields: ["documentId"],
+            details: {
+              populate: "*",
+            },
+            form: {
+              populate: {
+                formFields: {
+                  on: {
+                    "forms.dropdown": {
+                      populate: ["options"],
+                    },
+                    "forms.input": {
+                      populate: "*",
+                    },
+                    "forms.textarea": {
+                      populate: "*",
+                    },
+                  },
+                },
+              },
+            },
+            variant: {
+              populate: "*",
+            },
+            buttonVarient: {
+              populate: "*",
+            },
+
+            image: {
+              populate: {
+                fields: ["url", "alternativeText", "height", "width"],
+              },
+            },
+          },
+        },
+        contactInfo: {
+          fields: ["*"],
+          populate: {
+            contact: {
+              fields: ["*"],
+              populate: {
+                contactLink: {
+                  fields: ["*"],
+                  populate: ["icon"],
+                },
+              },
+            },
+          },
+        },
+
+        footerCta: footerBlock,
+      },
+    });
+
+    return await fetchData(url.href);
   } catch (error) {
-    console.error("Error submitting form:", error);
+    throw error;
+  }
+};
+
+export const saveContactFormData = async (data: any) => {
+  const authToken = await getAuthToken();
+
+  if (!authToken) throw new Error("No auth token found");
+
+  try {
+    const url = new URL("/api/inquiries", baseUrl);
+
+    const response = await postData(url.href, {
+      key: data.key,
+      origin: data.origin,
+      title: data.title,
+      data,
+    });
+
+    return response;
+  } catch (error) {
     throw error;
   }
 };
