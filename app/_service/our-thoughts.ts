@@ -57,7 +57,7 @@ export const getOurThoughtsData = async () => {
   try {
     const response = await graphqlClient.request(OUR_THOUGHTS_QUERY);
 
-    return (response as { ourThought: any }).ourThought;
+    return response.ourThought;
   } catch (error) {
     throw error;
   }

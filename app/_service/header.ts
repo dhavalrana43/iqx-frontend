@@ -46,7 +46,7 @@ export const getHeaderData = async () => {
   try {
     const response = await graphqlClient.request(HEADER_QUERY);
 
-    return (response as { header: any }).header;
+    return response.header;
   } catch (error) {
     throw error;
   }

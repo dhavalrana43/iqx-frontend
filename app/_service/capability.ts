@@ -84,7 +84,7 @@ export const getCapabilityBySlug = async (slug: string) => {
       slug,
     });
 
-    return (response as { capabilities: any }).capabilities;
+    return response.capabilities;
   } catch (error) {
     throw error;
   }
@@ -94,7 +94,7 @@ export const getAllCapabilitiesSlugs = async () => {
   try {
     const response = await graphqlClient.request(ALL_CAPABILITIES_QUERY);
 
-    return (response as { capabilities: any }).capabilities;
+    return response.capabilities;
   } catch (error) {
     throw error;
   }

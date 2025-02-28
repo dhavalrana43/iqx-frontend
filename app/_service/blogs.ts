@@ -146,7 +146,7 @@ export const getAllBlogsData = async (offset = 0, limit = 9) => {
       limit,
     });
 
-    return (response as { blogs: any }).blogs;
+    return response.blogs;
   } catch (error) {
     throw error;
   }
@@ -156,7 +156,7 @@ export const getLatestBlogs = async (limit = 6) => {
   try {
     const response = await graphqlClient.request(LATEST_BLOGS_QUERY, { limit });
 
-    return (response as { blogs: any }).blogs;
+    return response.blogs;
   } catch (error) {
     throw error;
   }
@@ -168,9 +168,7 @@ export const getBlogDataById = async (documentId: string) => {
       id: documentId,
     });
 
-    return (response as { blog: any }).blog.data
-      ? (response as { blog: any }).blog.data.attributes
-      : null;
+    return response.blog.data ? response.blog.data.attributes : null;
   } catch (error) {
     throw error;
   }
@@ -180,7 +178,7 @@ export const getAllBlogsTopics = async () => {
   try {
     const response = await graphqlClient.request(TOPICS_QUERY);
 
-    return (response as { topics: any }).topics;
+    return response.topics;
   } catch (error) {
     throw error;
   }
@@ -190,7 +188,7 @@ export const getAllBlogsIndutries = async () => {
   try {
     const response = await graphqlClient.request(INDUSTRIES_QUERY);
 
-    return (response as { industries: any }).industries;
+    return response.industries;
   } catch (error) {
     throw error;
   }
@@ -200,7 +198,7 @@ export const getAllBLogsType = async () => {
   try {
     const response = await graphqlClient.request(TYPES_QUERY);
 
-    return (response as { types: any }).types;
+    return response.types;
   } catch (error) {
     throw error;
   }

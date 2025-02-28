@@ -51,7 +51,7 @@ export const getHomeData = async () => {
   try {
     const response = await graphqlClient.request(HOME_QUERY);
 
-    return (response as { homePage: any }).homePage;
+    return response.homePage;
   } catch (error) {
     throw error;
   }

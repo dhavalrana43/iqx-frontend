@@ -51,7 +51,7 @@ export const getAluminiData = async () => {
   try {
     const response = await graphqlClient.request(ALUMINI_QUERY);
 
-    return (response as { careersAlumniPage: any }).careersAlumniPage;
+    return response.careersAlumniPage;
   } catch (error) {
     throw error;
   }

@@ -51,7 +51,7 @@ export const fetchCareersData = async () => {
   try {
     const response = await graphqlClient.request(CAREERS_QUERY);
 
-    return (response as { careersPage: any }).careersPage;
+    return response.careersPage;
   } catch (error) {
     throw error;
   }

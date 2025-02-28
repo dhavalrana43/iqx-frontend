@@ -51,7 +51,7 @@ export const getWhoWeareData = async () => {
   try {
     const response = await graphqlClient.request(WHO_WE_ARE_QUERY);
 
-    return (response as { whoWeArePage: any }).whoWeArePage;
+    return response.whoWeArePage;
   } catch (error) {
     throw error;
   }

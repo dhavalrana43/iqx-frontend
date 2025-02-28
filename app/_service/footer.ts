@@ -43,7 +43,7 @@ export const getFooterData = async () => {
   try {
     const response = await graphqlClient.request(FOOTER_QUERY);
 
-    return (response as { footer: any }).footer;
+    return response.footer;
   } catch (error) {
     throw error;
   }

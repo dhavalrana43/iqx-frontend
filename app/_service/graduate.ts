@@ -51,7 +51,7 @@ export const getGraduateData = async () => {
   try {
     const response = await graphqlClient.request(GRADUATE_QUERY);
 
-    return (response as { careersGraduate: any }).careersGraduate;
+    return response.careersGraduate;
   } catch (error) {
     throw error;
   }

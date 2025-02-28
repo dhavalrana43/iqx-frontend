@@ -4,8 +4,6 @@ import { siteConfig } from "@/_config/site";
 
 const baseUrl = siteConfig.apiUrl;
 
-const graphqlEndpoint = `${baseUrl}/graphql`;
-
 // For login mutation, we'll use standard REST since Strapi's GraphQL doesn't expose auth endpoints
 export async function getAuthToken() {
   const url = new URL("/api/auth/local", baseUrl);

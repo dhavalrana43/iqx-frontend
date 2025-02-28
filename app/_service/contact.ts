@@ -139,7 +139,7 @@ export const saveContactFormData = async (data: any) => {
       data: formattedData,
     });
 
-    return (response as { createInquiry: any }).createInquiry;
+    return response.createInquiry;
   } catch (error) {
     throw error;
   }

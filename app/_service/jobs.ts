@@ -42,7 +42,7 @@ export const getJobSearchData = async () => {
   try {
     const response = await graphqlClient.request(JOB_SEARCH_QUERY);
 
-    return (response as { jobSearchPage: any }).jobSearchPage;
+    return response.jobSearchPage;
   } catch (error) {
     throw error;
   }
