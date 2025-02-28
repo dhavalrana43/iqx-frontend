@@ -4,6 +4,7 @@ import { siteConfig } from "@/_config/site";
 import { fetchData } from "@/_data/loaders";
 
 import { footerBlock } from "./common-service-components/footer";
+import { commonBlocks } from "./common-service-components/common-blocks";
 
 const baseUrl = siteConfig.apiUrl;
 
@@ -25,31 +26,8 @@ export const getWhoWeareData = async () => {
             },
           },
         },
-        // blocks: commonBlocks,
-        blocks: {
-          on: {
-            "common.leaderships": {
-              populate: {
-                details: {
-                  fields: ["title", "subHeading", "description"],
-                },
-                leaderships: {
-                  populate: {
-                    fields: ["name", "designation", "url"],
-                    profile: {
-                      fields: ["url", "alternativeText", "width", "height"],
-                    },
-                  },
-                },
-                variant: {
-                  populate: {
-                    fields: ["Variant"],
-                  },
-                },
-              },
-            },
-          },
-        },
+        blocks: commonBlocks,
+
         footerCta: footerBlock,
       },
     });

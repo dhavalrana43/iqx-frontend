@@ -131,13 +131,20 @@ export const commonBlocks = {
     "common.leaderships": {
       populate: {
         details: {
-          populate: "*",
+          fields: ["title", "subHeading", "description"],
         },
         leaderships: {
-          populate: "*",
+          populate: {
+            fields: ["name", "designation", "url"],
+            profile: {
+              fields: ["url", "alternativeText", "width", "height"],
+            },
+          },
         },
         variant: {
-          populate: "*",
+          populate: {
+            fields: ["Variant"],
+          },
         },
       },
     },
