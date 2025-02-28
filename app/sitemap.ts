@@ -6,7 +6,7 @@ import { getAllBlogsData } from "./_service/blogs";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteMapPages: MetadataRoute.Sitemap = [];
 
-  const BASE_URL = "http://54.175.177.228:3000/";
+  const BASE_URL = "https://staging.iqbusiness.net/";
 
   const [capabilities, blogs] = await Promise.all([
     getAllCapabilitiesSlugs(),

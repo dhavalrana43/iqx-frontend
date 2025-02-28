@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 next dev",
+    "build": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 next build",
+    "start": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "prod": "pm2 start npm --name 'staging' npm -- run dev",
+    "prod": "pm2 start npm --name 'staging' -- run dev",
     "staging": "pm2 start npm --name nextjs-app -- run start -- -p 3000"
   },
   "dependencies": {
@@ -33,7 +33,7 @@
     "graphql-request": "^7.1.2",
     "intl-messageformat": "^10.5.0",
     "motion": "^11.18.0",
-    "next": "^15.1.4",
+    "next": "^15.1.7",
     "next-themes": "^0.4.4",
     "nodemailer": "^6.9.16",
     "punycode": "^2.3.0",
@@ -57,6 +57,7 @@
     "@types/react-dom": "18.3.0",
     "@types/xml2js": "^0.4.14",
     "autoprefixer": "^10.4.19",
+    "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.4",

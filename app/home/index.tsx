@@ -18,6 +18,8 @@ const Home = async () => {
 
   const footerData = fetchHomePageData?.data?.footerCta;
 
+  console.log("Home page data: " + JSON.stringify(fetchHomePageData, null, 2));
+
   return (
     <>
       <CustomHead

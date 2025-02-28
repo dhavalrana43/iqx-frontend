@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
   const disallowRobots = false;
-  const BASE_URL = "http://54.175.177.228:3000/";
+  const BASE_URL = "https://staging.iqbusiness.net/";
 
   if (disallowRobots) {
     return {

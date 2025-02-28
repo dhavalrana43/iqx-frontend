@@ -10,11 +10,6 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "iqbusiness-backend.onrender.com",
-        pathname: "/uploads/**/*",
-      },
-      {
-        protocol: "https",
         hostname: "app.requestly.io",
         pathname: "/**",
       },
