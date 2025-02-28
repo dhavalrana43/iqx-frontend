@@ -1,4 +1,4 @@
-export const ChevronDown = ({
+export const DownArrow = ({
   fill = "currentColor",
   size,
   height,

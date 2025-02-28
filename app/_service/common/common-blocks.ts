@@ -1,3 +1,4 @@
+// app\_service\common\common-blocks.ts
 export const commonBlocks = {
   on: {
     "common.cta-card": {

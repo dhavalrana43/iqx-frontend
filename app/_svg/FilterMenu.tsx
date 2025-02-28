@@ -1,6 +1,6 @@
 import React from "react";
 
-const BLogMenu = () => {
+const FilterMenu = () => {
   return (
     <>
       <svg
@@ -21,4 +21,4 @@ const BLogMenu = () => {
   );
 };
 
-export default BLogMenu;
+export default FilterMenu;

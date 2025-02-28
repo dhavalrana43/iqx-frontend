@@ -6,7 +6,7 @@ import SearchIcon from "@/_svg/SearchIcon";
 import HeroSection from "@/_components/hero-section/HeroSection";
 import BlogCard from "@/_components/blog-card/BlogCard";
 import FullText from "@/_components/full-text/FullText";
-import BLogMenu from "@/_svg/BLogMenu";
+import FilterMenu from "@/_svg/FilterMenu";
 
 const OurThoughtsPage = ({
   blogs,
@@ -56,7 +56,7 @@ const OurThoughtsPage = ({
                   <Popover showArrow offset={10} placement="bottom">
                     <PopoverTrigger>
                       <Button className="bg-transparent">
-                        <BLogMenu />
+                        <FilterMenu />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-screen">

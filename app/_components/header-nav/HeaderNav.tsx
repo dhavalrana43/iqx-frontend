@@ -20,7 +20,7 @@ import {
 
 import CustomImage from "@/_components/custom-image/CustomImage";
 import CustomButton from "@/_components/custom-button/CustomButton";
-import { ChevronDown } from "@/_svg/chevronDown";
+import { DownArrow } from "@/_svg/DownArrow";
 
 const MenuBurger = () => {
   return (
@@ -122,7 +122,7 @@ const HeaderNav = ({ navData }: any) => {
                     className="p-0 bg-transparent data-[hover=true]:bg-transparent"
                     endContent={
                       item?.subMenu?.length > 0 ? (
-                        <ChevronDown fill="white" />
+                        <DownArrow fill="white" />
                       ) : null
                     }
                     radius="sm"
@@ -195,7 +195,7 @@ const HeaderNav = ({ navData }: any) => {
                     className="p-0 bg-transparent data-[hover=true]:bg-transparent"
                     endContent={
                       item?.subMenu?.length > 0 ? (
-                        <ChevronDown fill="white" />
+                        <DownArrow fill="white" />
                       ) : null
                     }
                     radius="sm"
