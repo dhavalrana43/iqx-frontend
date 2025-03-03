@@ -1,10 +1,11 @@
+// app\_service\home.ts
+
 import qs from "qs";
 
 import { siteConfig } from "@/_config/site";
 import { fetchData } from "@/_data/loaders";
 
 import { footerBlock } from "./common/footer";
-import { commonBlocks } from "./common/common-blocks";
 
 const baseUrl = siteConfig.apiUrl;
 
@@ -26,7 +27,7 @@ export const getHomeData = async () => {
             },
           },
         },
-        blocks: commonBlocks,
+        blocks: true,
         footerCta: footerBlock,
       },
     });

@@ -1,3 +1,5 @@
+// app\home\index.tsx
+
 import React from "react";
 import { unstable_cache } from "next/cache";
 
@@ -17,6 +19,8 @@ const Home = async () => {
   const fetchHomePageData = await getHomeDataCached();
 
   const footerData = fetchHomePageData?.data?.footerCta;
+
+  console.log("Home Block: " + JSON.stringify(fetchHomePageData, null, 2));
 
   return (
     <>
